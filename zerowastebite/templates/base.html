@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}ZeroWasteBite · Rescue good food near you{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="nav">
+    <a class="brand" href="{{ url_for('index') }}">🌿 ZeroWasteBite</a>
+    <nav>
+      <a href="{{ url_for('track') }}">Find my code</a>
+      {% if session.vendor_id %}<a href="{{ url_for('dashboard') }}">My shop</a><a href="{{ url_for('logout') }}">Log out</a>
+      {% else %}<a href="{{ url_for('login') }}" class="pill">For shops</a>{% endif %}
+    </nav>
+  </header>
+  {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% for cat, m in msgs %}<div class="toast {{ cat }}" role="status">{{ m }}</div>{% endfor %}
+  {% endwith %}
+  {% block body %}{% endblock %}
+  <footer class="foot">ZeroWasteBite · Pay the shop directly when you pick up.</footer>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

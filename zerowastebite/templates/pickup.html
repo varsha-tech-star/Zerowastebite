@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Your pickup code · ZeroWasteBite{% endblock %}
+{% block body %}
+<main class="wrap narrow">
+  <div class="ticket">
+    <p class="vendor center"><span class="av">{{ r.emoji }}</span>{{ r.vendor }}</p>
+    <h1>{{ r.title }}</h1>
+    <p class="meta">{{ r.address }}</p>
+    <div class="code" aria-label="Pickup code">{{ r.code }}</div>
+    <p class="status {{ r.status }}">{% if r.status == 'reserved' %}Reserved for {{ r.customer }}{% else %}{{ r.status|capitalize }}{% endif %}</p>
+    <dl>
+      <div><dt>Pickup window</dt><dd>{{ r.pickup_start|clock }} – {{ r.pickup_end|clock }}</dd></div>
+      <div><dt>Closes in</dt><dd><em class="timer plain" data-end="{{ r.pickup_end }}">--</em></dd></div>
+      <div><dt>Pay at shop</dt><dd>₹{{ '%.0f'|format(r.price) }}</dd></div>
+    </dl>
+    <p class="meta">Show this code at the counter. Bookmark this page or use "Find my code" later.</p>
+    {% if r.status == 'reserved' and r.pickup_end > now %}
+    <form method="post" action="{{ url_for('cancel', code=r.code) }}" onsubmit="return confirm('Cancel this reservation?')">
+      <input type="hidden" name="csrf" value="{{ csrf() }}"><button class="btn ghost full">Cancel reservation</button></form>
+    {% endif %}
+    <a class="btn full" href="{{ url_for('index') }}">Back to bags</a>
+  </div>
+</main>
+{% endblock %}

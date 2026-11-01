@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Register your shop · ZeroWasteBite{% endblock %}
+{% block body %}
+<main class="wrap narrow"><form method="post" class="panel">
+  <input type="hidden" name="csrf" value="{{ csrf() }}">
+  <h1>Register your shop</h1><p class="meta">Turn leftovers into income instead of waste.</p>
+  <label>Shop name<input name="name" required maxlength="60"></label>
+  <label>Shop type<select name="category" required>{% for c in categories %}<option>{{ c }}</option>{% endfor %}</select></label>
+  <label>Address<input name="address" required></label>
+  <label>Email<input type="email" name="email" required></label>
+  <label>Password (8+ characters)<input type="password" name="password" required minlength="8"></label>
+  <button class="btn full">Create shop account</button>
+</form></main>
+{% endblock %}

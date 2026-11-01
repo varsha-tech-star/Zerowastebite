@@ -1,0 +1,5 @@
+{% extends "base.html" %}
+{% block body %}
+<main class="wrap narrow"><div class="panel center"><h1>{{ code }}</h1><p>{{ msg }}</p>
+<a class="btn full" href="{{ url_for('index') }}">Back to home</a></div></main>
+{% endblock %}

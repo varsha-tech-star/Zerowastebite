@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Shop login · ZeroWasteBite{% endblock %}
+{% block body %}
+<main class="wrap narrow"><form method="post" class="panel">
+  <input type="hidden" name="csrf" value="{{ csrf() }}">
+  <h1>Shop login</h1><p class="meta">Post your leftover bags before closing time.</p>
+  <label>Email<input type="email" name="email" required value="crumb@demo.com"></label>
+  <label>Password<input type="password" name="password" required value="demo123"></label>
+  <button class="btn full">Log in</button>
+  <p class="meta">Demo shops: crumb, brew, green, canteen, dosa, sweet @demo.com · password demo123</p>
+  <p class="meta">New here? <a href="{{ url_for('register') }}"><b>Register your shop</b></a></p>
+</form></main>
+{% endblock %}

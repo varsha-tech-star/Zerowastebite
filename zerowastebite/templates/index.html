@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block body %}
+<section class="hero">
+  <div class="hero-text">
+    <h1>Eat well.<br><i>Waste none.</i></h1>
+    <p>Fresh leftovers from bakeries, cafés and canteens near you, rescued at closing time for a fraction of the price.</p>
+    <label class="search"><span aria-hidden="true">🔍</span>
+      <input id="q" type="search" placeholder="Search croissants, thali, brownies…" aria-label="Search bags">
+    </label>
+    <p class="hero-stat"><b>{{ total_left }}</b> bags to rescue tonight</p>
+  </div>
+  <div class="stickers" aria-hidden="true">
+    <span class="s1">🥐</span><span class="s2">🍓</span><span class="s3">🍱</span><span class="s4">🧁</span>
+  </div>
+</section>
+
+<main class="wrap">
+  <div class="chips" role="group" aria-label="Filter">
+    <button class="chip on" data-filter="all">All</button>
+    {% for c in categories %}<button class="chip" data-filter="{{ c }}">{{ c }}</button>{% endfor %}
+    <button class="chip" data-filter="saved">♥ Saved</button>
+  </div>
+  <p id="none" class="empty" hidden>Nothing matches yet. Try another search or filter.</p>
+  {% if not bags %}<div class="empty"><h2>No bags right now</h2><p>Shops post leftovers near closing time. Check back this evening.</p></div>{% endif %}
+
+  <div class="masonry">
+  {% for b in bags %}
+    <article class="card" data-id="{{ b.id }}" data-cat="{{ b.category }}"
+             data-text="{{ (b.title ~ ' ' ~ b.vendor ~ ' ' ~ b.description)|lower }}">
+      <div class="art cat-{{ loop.index0 % 4 }}" style="aspect-ratio: {{ ['4/3','4/4.6','4/3.4','4/5'][loop.index0 % 4] }}">
+        <span class="emo">{{ b.emoji }}</span>
+        {% if b.image_url %}<img src="{{ b.image_url }}" alt="{{ b.title }}" loading="lazy" onerror="this.remove()">{% endif %}
+        <button class="heart" data-save="{{ b.id }}" aria-label="Save {{ b.title }}">♥</button>
+        <em class="timer {{ 'soon' if b.pickup_end - now < 1800 }}" data-end="{{ b.pickup_end }}">--</em>
+      </div>
+      <div class="body">
+        <p class="vendor"><span class="av">{{ b.emoji }}</span>{{ b.vendor }}</p>
+        <h3>{{ b.title }}</h3>
+        <p class="desc">{{ b.description }}</p>
+        <p class="meta">{{ b.pickup_start|clock }} – {{ b.pickup_end|clock }} · {{ b.address }}</p>
+        <div class="buy">
+          <div class="price"><b>₹{{ '%.0f'|format(b.price) }}</b><s>₹{{ '%.0f'|format(b.original_value) }}</s></div>
+          <span class="left {{ 'low' if b.quantity <= 2 }}">{{ b.quantity }} left</span>
+        </div>
+        <button class="btn" data-reserve="{{ b.id }}" data-title="{{ b.title }}" data-vendor="{{ b.vendor }}" data-price="{{ '%.0f'|format(b.price) }}">Reserve bag</button>
+      </div>
+    </article>
+  {% endfor %}
+  </div>
+</main>
+
+<dialog id="modal" class="modal">
+  <form method="post" id="reserve-form">
+    <input type="hidden" name="csrf" value="{{ csrf() }}">
+    <h2 id="m-title"></h2><p class="meta" id="m-sub"></p>
+    <label>Your name<input name="name" required minlength="2" maxlength="60" autocomplete="name"></label>
+    <label>Mobile number<input name="phone" required inputmode="numeric" pattern="[6-9][0-9]{9}" placeholder="10 digits" autocomplete="tel"></label>
+    <div class="row"><button type="button" class="btn ghost" data-close>Cancel</button><button class="btn">Get my pickup code</button></div>
+  </form>
+</dialog>
+{% endblock %}

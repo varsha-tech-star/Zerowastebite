@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}{{ v.name }} · ZeroWasteBite{% endblock %}
+{% block body %}
+<main class="wrap">
+  <h1 class="page-title">{{ v.emoji }} {{ v.name }}</h1>
+  <div class="stats">
+    <div><b>{{ stats.live }}</b><span>bags live</span></div>
+    <div><b>{{ stats.reserved }}</b><span>awaiting pickup</span></div>
+    <div><b>{{ stats.collected }}</b><span>collected</span></div>
+    <div><b>₹{{ '%.0f'|format(stats.saved) }}</b><span>saved for buyers</span></div>
+  </div>
+  <div class="split">
+    <form class="panel" method="post" action="{{ url_for('post_bag') }}" enctype="multipart/form-data">
+      <input type="hidden" name="csrf" value="{{ csrf() }}">
+      <h2>Post a mystery bag</h2>
+      <label>Name<input name="title" required minlength="3" maxlength="60" placeholder="Pastry Surprise"></label>
+      <label>What could be inside<textarea name="description" rows="2" maxlength="200" required></textarea></label>
+      <label>Photo (optional, JPG/PNG/WebP)<input type="file" name="photo" accept="image/jpeg,image/png,image/webp"></label>
+      <div class="row">
+        <label>Price (₹)<input type="number" name="price" min="1" required></label>
+        <label>Worth (₹)<input type="number" name="original_value" min="1" required></label>
+        <label>Bags<input type="number" name="quantity" min="1" max="100" required></label>
+      </div>
+      <div class="row">
+        <label>Pickup from<input type="time" name="start" required value="20:30"></label>
+        <label>Pickup until<input type="time" name="end" required value="21:00"></label>
+      </div>
+      <button class="btn full">Post bag</button>
+    </form>
+    <div>
+      <div class="panel">
+        <h2>Reservations</h2>
+        {% if not res %}<p class="meta">Reservations appear here as buyers reserve.</p>{% endif %}
+        <ul class="list">{% for r in res %}
+          <li><div><b>{{ r.name }}</b><span class="meta">{{ r.phone }} · {{ r.title }}</span></div><code>{{ r.code }}</code>
+            {% if r.status == 'reserved' and r.pickup_end > now %}
+              <form method="post" action="{{ url_for('collect', rid=r.id) }}"><input type="hidden" name="csrf" value="{{ csrf() }}"><button class="btn small">Mark collected</button></form>
+            {% elif r.status == 'reserved' %}<span class="status reserved">Missed</span>
+            {% else %}<span class="status collected">Collected</span>{% endif %}</li>
+        {% endfor %}</ul>
+      </div>
+      <div class="panel">
+        <h2>Your listings</h2>
+        <ul class="list">{% for b in bags %}
+          <li><div><b>{{ b.title }}</b><span class="meta">{{ b.quantity }} left · until {{ b.pickup_end|clock }}</span></div>
+            {% if b.pickup_end > now %}<form method="post" action="{{ url_for('close_bag', bag_id=b.id) }}"><input type="hidden" name="csrf" value="{{ csrf() }}"><button class="btn small ghost">Close</button></form>
+            {% else %}<span class="meta">Ended</span>{% endif %}</li>
+        {% endfor %}</ul>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}

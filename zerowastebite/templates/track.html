@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Find my code · ZeroWasteBite{% endblock %}
+{% block body %}
+<main class="wrap narrow"><form method="post" class="panel">
+  <input type="hidden" name="csrf" value="{{ csrf() }}">
+  <h1>Find my pickup</h1><p class="meta">Enter the 4-character code you received.</p>
+  <label>Pickup code<input name="code" required maxlength="4" minlength="4" autocomplete="off" style="text-transform:uppercase"></label>
+  <button class="btn full">Show my reservation</button>
+</form></main>
+{% endblock %}
